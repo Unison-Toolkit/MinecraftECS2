@@ -7,57 +7,49 @@ using UnityEngine;
 //[UpdateBefore(typeof(LateSimulationSystemGroup))]
 partial class PlayerMovementSystem : SystemBase
 {
+    const float speed = 3f;
+
     protected override void OnUpdate()
     {
-        //float dt = SystemAPI.Time.DeltaTime;
-        float3 inputs = default(float3);
-        const float speed = 3f;
-        Vector3 cameraPos = new Vector3(0, 1, 0);
-        //Vector3 cameraFrd = new Vector3(0,0,0);
-        float2 PlayerPos = new float2(0, 0);
-        Quaternion currentQuaternion;
-
-        inputs = new float3(Input.GetAxis("Horizontal"), Input.GetAxis("Jump"), Input.GetAxis("Vertical"));
-
-        //Get Camera GO Component & position/Rotation
-        var cameraTransform = CameraLink.Instance.transform;
-        //cameraFrd = cameraTransform.forward;
-
-        //Sync Y Rotation
-        var cameraRotation = cameraTransform.rotation.eulerAngles;
-        currentQuaternion = Quaternion.Euler(0, cameraRotation.y, 0);
+        // Camera position offset relative to player's position.
+        float3 camOffset = new(0, 1.5f, 0);
+        Vector3 camPosition = default;
+        float2 moveVelocity = default;
+        float3 moveInput = new float3(Input.GetAxis("Horizontal"), Input.GetAxis("Jump"), Input.GetAxis("Vertical"));
+        Transform camTransform = CameraLink.Instance.transform;
+        Quaternion camRotation = Quaternion.Euler(0, camTransform.rotation.eulerAngles.y, 0);
 
         Entities
             .WithAll<PlayerEntity>()
            .ForEach((ref LocalTransform local, ref PhysicsVelocity vel) =>
             {
-                //Sync camera position & Rotation to player position
-                cameraPos = local.Position + new float3(0, 1.5f, 0);
-                local.Rotation = currentQuaternion;
+                // Sync camera and player.
+                camPosition = local.Position + camOffset;
+                local.Rotation = camRotation;
 
-                // Move.
-                if (inputs.z != 0)
+                // Move forward & backward.
+                if (moveInput.x != 0)
                 {
-                    PlayerPos += new float2(local.Forward().x, local.Forward().z) * inputs.z * speed;
-                }
-                if (inputs.x != 0)
-                {
-                    PlayerPos += new float2(local.Right().x, local.Right().z) * inputs.x * speed;
-                }
-                // Jump.
-                if (inputs.y > 0)
-                {
-                    vel.Linear.y = local.Up().y * speed;
+                    moveVelocity += new float2(local.Right().x, local.Right().z) * moveInput.x * speed;
                 }
 
-                //push to Velocity if inputs = 0 than Velocity = 0;
-                vel.Linear.xz = PlayerPos;
+                // Strafe right & left.
+                if (moveInput.z != 0)
+                {
+                    moveVelocity += new float2(local.Forward().x, local.Forward().z) * moveInput.z * speed;
+                }
+
+                // Jump up.
+                if (moveInput.y > 0)
+                {
+                    vel.Linear.y = local.Up().y * moveInput.y * speed;
+                }
+
+                // Move rigid body based on input.
+                vel.Linear.xz = moveVelocity;
             })
         .Run();
         //.WithBurst().ScheduleParallel();
-
-        //camera Position
-        cameraTransform.position = cameraPos;
+        camTransform.position = camPosition;
     }
-
 }
