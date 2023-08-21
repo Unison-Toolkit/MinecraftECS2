@@ -22,7 +22,7 @@ partial struct BlockGenerator : IJobEntity
 
     //Execute with BlockType Aspect
     [BurstCompile]
-    void Execute([ChunkIndexInQuery] int index, in BlockTypeAspect BlockType)
+    void Execute([ChunkIndexInQuery] int index, BlockTypeAspect BlockType)
     {
 
         //defaultPrefab = BlockType.defaultPrefab;

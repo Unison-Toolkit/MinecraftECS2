@@ -29,25 +29,25 @@ partial class PlayerMovementSystem : SystemBase
 
         Entities
             .WithAll<PlayerEntity>()
-           .ForEach((ref TransformAspect transform, ref PhysicsVelocity vel) =>
+           .ForEach((ref LocalTransform local, ref PhysicsVelocity vel) =>
             {
                 //Sync camera position & Rotation to player position
-                cameraPos = transform.LocalPosition + new float3(0, 1.5f, 0);
-                transform.LocalRotation = currentQuaternion;
+                cameraPos = local.Position + new float3(0, 1.5f, 0);
+                local.Rotation = currentQuaternion;
 
-                //Movement
+                // Move.
                 if (inputs.z != 0)
                 {
-                    PlayerPos = transform.Forward.xz * inputs.z * speed;
+                    PlayerPos += new float2(local.Forward().x, local.Forward().z) * inputs.z * speed;
                 }
                 if (inputs.x != 0)
                 {
-                    PlayerPos += transform.Right.xz * inputs.x * speed;
+                    PlayerPos += new float2(local.Right().x, local.Right().z) * inputs.x * speed;
                 }
-                //Jump check
+                // Jump.
                 if (inputs.y > 0)
                 {
-                    vel.Linear.y = transform.Up.y * speed;
+                    vel.Linear.y = local.Up().y * speed;
                 }
 
                 //push to Velocity if inputs = 0 than Velocity = 0;
