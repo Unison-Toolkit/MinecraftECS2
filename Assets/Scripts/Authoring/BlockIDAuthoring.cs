@@ -10,7 +10,8 @@ class BlockIDBaker : Baker<BlockIDAuthoring>
 {
     public override void Bake(BlockIDAuthoring authoring)
     {
-        AddComponent(new BlockID
+        var entity = GetEntity(TransformUsageFlags.Dynamic);
+        AddComponent(entity, new BlockID
         {
             blockID = authoring.blockID
         });

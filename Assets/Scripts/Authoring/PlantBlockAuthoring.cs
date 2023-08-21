@@ -10,6 +10,7 @@ class PlantBlockBaker : Baker<PlantBlockAuthoring>
 {
     public override void Bake(PlantBlockAuthoring authoring)
     {
-        AddComponent(new PlantBlock { });
+        var entity = GetEntity(TransformUsageFlags.Dynamic);
+        AddComponent(entity, new PlantBlock { });
     }
 }

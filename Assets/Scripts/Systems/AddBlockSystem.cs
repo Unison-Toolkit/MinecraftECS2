@@ -1,14 +1,7 @@
-using System;
-using Unity.Collections;
-using Unity.Mathematics;
 using Unity.Entities;
-using UnityEngine;
-using Unity.Burst;
-using Unity.Transforms;
 using Unity.Jobs;
+using Unity.Transforms;
 
-// Contrarily to ISystem, SystemBase systems are classes.
-// They are not Burst compiled, and can use managed code.
 [RequireMatchingQueriesForUpdate]
 partial class AddBlockSystem : SystemBase
 {
@@ -24,7 +17,6 @@ partial class AddBlockSystem : SystemBase
     {
         var ecb = m_BeginSimECBSystem.CreateCommandBuffer(); //.AsParallelWriter();
         var blockType = SystemAPI.GetSingleton<BlockType>();
-
 
         Entities
         .WithAll<AddBlock>()

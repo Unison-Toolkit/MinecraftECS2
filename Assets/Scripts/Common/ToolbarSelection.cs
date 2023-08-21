@@ -6,22 +6,19 @@ public class ToolbarSelection : MonoBehaviour
     int blockNum = 0;
     //public static Transform[] BlockUI = new Transform[7];
     public static Transform[] BlockUI;
-
     public static Transform BlockUIChild;
 
-    void Start()
+    private void Start()
     {
         BlockUI = new Transform[10];
         for (int i = 0; i < 7; i++)
         {
             BlockUI[i] = this.transform.GetChild(i);
         }
-
     }
 
-    void Update()
+    private void Update()
     {
-
         blockNum = Unity.Physics.Extensions.PickaxeController.m_blockID - 1;
         //print("blockNum=" +blockNum);
 

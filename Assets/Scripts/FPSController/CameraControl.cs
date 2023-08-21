@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CameraControl : MonoBehaviour
+class CameraControl : MonoBehaviour
 {
     public static float lookSpeedH = 2f;
     public static float lookSpeedV = 2f;
@@ -15,13 +15,10 @@ public class CameraControl : MonoBehaviour
         pitch = transform.eulerAngles.x;
     }
 
-    void Update()
+    private void Update()
     {
-
         yaw += lookSpeedH * Input.GetAxis("Mouse X");
         pitch -= lookSpeedV * Input.GetAxis("Mouse Y");
-
         transform.eulerAngles = new Vector3(pitch, yaw, 0f);
-
     }
 }

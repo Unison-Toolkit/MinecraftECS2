@@ -1,10 +1,11 @@
+using UnityEngine;
 
-class CameraLink : UnityEngine.MonoBehaviour
+class CameraLink : MonoBehaviour
 {
-    public static UnityEngine.Camera Instance;
+    public static Camera Instance;
 
-    void Awake()
+    private void Awake()
     {
-        Instance = GetComponent<UnityEngine.Camera>();
+        Instance = GetComponent<Camera>();
     }
 }

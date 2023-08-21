@@ -49,7 +49,7 @@ partial struct BlockGenerator : IJobEntity
                     if (ranDice <= 20)
                     {
                         //grass 88-95
-                        blockPrefab = BlockType.plantPrefab;
+                        blockPrefab = BlockType.PlantPrefab;
                         //matNumber = 3;
                         m_mat = Random.NextInt(88, 95);
                         spawnFlag = true;
@@ -58,7 +58,7 @@ partial struct BlockGenerator : IJobEntity
                     if (ranDice == 198)
                     {
                         //cloud
-                        blockPrefab = BlockType.defaultPrefab;
+                        blockPrefab = BlockType.DefaultPrefab;
                         //matNumber = 1;
                         m_mat = 66;
                         TreeNCloudGenerator(y, 0, BlockType);
@@ -66,7 +66,7 @@ partial struct BlockGenerator : IJobEntity
                     if (ranDice == 200)
                     {
                         //flower
-                        blockPrefab = BlockType.plantPrefab;
+                        blockPrefab = BlockType.PlantPrefab;
                         //matNumber = 3;
                         m_mat = Random.NextInt(12, 13);
                         spawnFlag = true;
@@ -81,14 +81,14 @@ partial struct BlockGenerator : IJobEntity
                 //Treat the turf
                 else if (i == 1)
                 {
-                    blockPrefab = BlockType.sixSidedPrefab;
+                    blockPrefab = BlockType.SixSidedPrefab;
                     m_mat = 1;
                     //matNumber = 0;
                 }
                 //Underground blocks(i > 1)
                 else
                 {
-                    blockPrefab = BlockType.defaultPrefab;
+                    blockPrefab = BlockType.DefaultPrefab;
                     //matNumber = 1;
 
                     //switch materials that underground
@@ -185,14 +185,14 @@ partial struct BlockGenerator : IJobEntity
                 if (i == 6)
                 {
                     //leaves
-                    blockPrefab = BlockType.defaultAlphaPrefab;
+                    blockPrefab = BlockType.DefaultAlphaPrefab;
                     //matNumber = 2;
                     m_mat = 53f;
                 }
                 else
                 {
                     //wood
-                    blockPrefab = BlockType.sixSidedPrefab;
+                    blockPrefab = BlockType.SixSidedPrefab;
                     //matNumber = 0;
                     m_mat = 0.67f;
                 }
@@ -210,7 +210,7 @@ partial struct BlockGenerator : IJobEntity
                             if (k != blockTemp.z || j != blockTemp.x)
                             {
                                 //leaves
-                                blockPrefab = BlockType.defaultAlphaPrefab;
+                                blockPrefab = BlockType.DefaultAlphaPrefab;
                                 //matNumber = 2;
                                 m_mat = 52f;
 

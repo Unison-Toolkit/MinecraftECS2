@@ -10,7 +10,8 @@ class GameSettingsBaker : Baker<GameSettingsAuthoring>
 {
     public override void Bake(GameSettingsAuthoring authoring)
     {
-        AddComponent(new GameSettings
+        var entity = GetEntity(TransformUsageFlags.Dynamic);
+        AddComponent(entity, new GameSettings
         {
             chunkSize = authoring.chunkSize
         });

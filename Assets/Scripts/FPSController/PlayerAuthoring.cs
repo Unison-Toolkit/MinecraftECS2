@@ -1,23 +1,22 @@
 using Unity.Entities;
+using UnityEngine;
 
-// An empty component is called a "tag component".
+// An empty "tag" component used to identify the player.
 struct PlayerEntity : IComponentData
 {
 
 }
 
-// Authoring MonoBehaviours are regular GameObject components.
-// They constitute the inputs for the baking systems which generates ECS data.
-class PlayerAuthoring : UnityEngine.MonoBehaviour
+class PlayerAuthoring : MonoBehaviour
 {
 
 }
 
-// Bakers convert authoring MonoBehaviours into entities and components.
 class PlayerBaker : Baker<PlayerAuthoring>
 {
     public override void Bake(PlayerAuthoring authoring)
     {
-        AddComponent<PlayerEntity>();
+        var entity = GetEntity(TransformUsageFlags.Dynamic);
+        AddComponent<PlayerEntity>(entity);
     }
 }

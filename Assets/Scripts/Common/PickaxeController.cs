@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Unity.Physics.Extensions
 {
-    public class PickaxeController : MonoBehaviour
+    class PickaxeController : MonoBehaviour
     {
         public float Distance = 10.0f;
         public Vector3 Direction = new Vector3(0, 0, 1);
@@ -116,7 +116,6 @@ namespace Unity.Physics.Extensions
                 //Right click to place block
                 PlaceNRemoveBlock(m_block, m_mat, true);
             }
-
         }
 
         void OnDestroy()

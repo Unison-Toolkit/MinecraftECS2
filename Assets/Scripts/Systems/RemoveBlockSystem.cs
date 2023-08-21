@@ -1,11 +1,7 @@
-using System;
-using Unity.Collections;
-using Unity.Mathematics;
 using Unity.Entities;
-using UnityEngine;
-using Unity.Burst;
-using Unity.Transforms;
 using Unity.Jobs;
+using Unity.Mathematics;
+using Unity.Transforms;
 
 [UpdateAfter(typeof(AddBlockSystem))]
 partial class RemoveBlockSystem : SystemBase

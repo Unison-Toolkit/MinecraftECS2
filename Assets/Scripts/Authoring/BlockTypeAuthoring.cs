@@ -1,27 +1,25 @@
 using Unity.Entities;
+using UnityEngine;
 
-// Authoring MonoBehaviours are regular GameObject components.
-// They constitute the inputs for the baking systems which generates ECS data.
-public class BlockTypeAuthoring : UnityEngine.MonoBehaviour
+class BlockTypeAuthoring : MonoBehaviour
 {
-    public UnityEngine.GameObject sixSidedPrefab;
-    public UnityEngine.GameObject defaultPrefab;
-    public UnityEngine.GameObject defaultAlphaPrefab;
-    public UnityEngine.GameObject plantPrefab;
+    public GameObject sixSidedPrefab;
+    public GameObject defaultPrefab;
+    public GameObject defaultAlphaPrefab;
+    public GameObject plantPrefab;
 }
 
-// Bakers convert authoring MonoBehaviours into entities and components.
-public class BlockTypeBaker : Baker<BlockTypeAuthoring>
+class BlockTypeBaker : Baker<BlockTypeAuthoring>
 {
     public override void Bake(BlockTypeAuthoring authoring)
-    //static void Bake(BlockTypeAuthoring authoring)
     {
-        AddComponent(new BlockType
+        var entity = GetEntity(TransformUsageFlags.Dynamic);
+        AddComponent(entity, new BlockType
         {
-            sixSidedPrefab = GetEntity(authoring.sixSidedPrefab),
-            defaultPrefab = GetEntity(authoring.defaultPrefab),
-            defaultAlphaPrefab = GetEntity(authoring.defaultAlphaPrefab),
-            plantPrefab = GetEntity(authoring.plantPrefab)
+            sixSidedPrefab = GetEntity(authoring.sixSidedPrefab, TransformUsageFlags.Dynamic),
+            defaultPrefab = GetEntity(authoring.defaultPrefab, TransformUsageFlags.Dynamic),
+            defaultAlphaPrefab = GetEntity(authoring.defaultAlphaPrefab, TransformUsageFlags.Dynamic),
+            plantPrefab = GetEntity(authoring.plantPrefab, TransformUsageFlags.Dynamic)
         });
     }
 }
