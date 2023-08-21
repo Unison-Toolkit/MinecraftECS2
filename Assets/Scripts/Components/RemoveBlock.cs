@@ -3,6 +3,7 @@ using Unity.Entities;
 using UnityEngine;
 using Unity.Mathematics;
 
-    public struct RemoveBlock : IComponentData
-    {
-    }
+public struct RemoveBlock : IComponentData
+{
+
+}

@@ -3,14 +3,12 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Rendering;
-using Unity.Physics;
 using Material = UnityEngine.Material;
-using Collider = Unity.Physics.Collider;
-using SphereCollider = Unity.Physics.SphereCollider;
 
 public class WorldGeneratorMeshes : MonoBehaviour
 {
@@ -19,11 +17,11 @@ public class WorldGeneratorMeshes : MonoBehaviour
     public Mesh plantMesh;
     public Material surfaceMaterial;
     public Material defaultMaterial;
-    public Material defaultMaterialAlpha;   
+    public Material defaultMaterialAlpha;
     public Material plantMaterial;
 
     public int m_chunkSize;
-    
+
     Mesh[] meshes = new Mesh[3];
 
     int m_w;
@@ -38,7 +36,7 @@ public class WorldGeneratorMeshes : MonoBehaviour
 
         public int w;
         public int h;
-        
+
         public EntityCommandBuffer.ParallelWriter Ecb;
         int meshNumber;
         int matNumber;
@@ -51,59 +49,59 @@ public class WorldGeneratorMeshes : MonoBehaviour
         public void Execute(int index)
         {
 
-            //每一個x,y座標都有往下15個方塊
-            for(int i=0; i<15; i++)
+            //Each x,y coordinate has 15 blocks downwards
+            for (int i = 0; i < 15; i++)
             {
                 spawnFlag = true;
                 bool b_rotate = false;
-                //處理地表上的磚塊
-                if(i==0)
+                //Dealing with bricks on the surface
+                if (i == 0)
                 {
                     spawnFlag = false;
 
-                    //如果高度是0, 代表這是地表上，亂數隨機產生(沒方塊、草、花、樹木、雲)  
+                    //If the height is 0, it means that this is on the surface, and random numbers are generated (no blocks, grass, flowers, trees, clouds) 
                     var Random = Unity.Mathematics.Random.CreateFromIndex((uint)index);
-                    ranDice = Random.NextInt(1,201);
-  
+                    ranDice = Random.NextInt(1, 201);
+
                     if (ranDice <= 20)
                     {
-                        //草 88-95
+                        //grass 88-95
                         meshNumber = 2;
                         matNumber = 3;
-                        m_mat = Random.NextInt(88,95);
+                        m_mat = Random.NextInt(88, 95);
                         spawnFlag = true;
                         b_rotate = true;
                     }
                     if (ranDice == 198)
                     {
-                        //雲
+                        //cloud
                         meshNumber = 1;
                         matNumber = 1;
                         m_mat = 66;
-                        TreeNCloudGenerator(index,0);
+                        TreeNCloudGenerator(index, 0);
                     }
                     if (ranDice == 200)
                     {
-                        //花
+                        //flower
                         meshNumber = 2;
                         matNumber = 3;
-                        m_mat = Random.NextInt(12,13);
+                        m_mat = Random.NextInt(12, 13);
                         spawnFlag = true;
                         b_rotate = true;
                     }
                     if (ranDice == 199)
                     {
-                        //樹
-                        TreeNCloudGenerator(index,1);
+                        //tree
+                        TreeNCloudGenerator(index, 1);
                     }
                 }
-                //處理草皮
-                else if(i == 1)
+                //Treat the turf
+                else if (i == 1)
                 {
-                        meshNumber = 0;
-                        matNumber = 0;
+                    meshNumber = 0;
+                    matNumber = 0;
                 }
-                //地底方塊(i > 1)
+                //Underground blocks (i > 1)
                 else
                 {
                     meshNumber = 1;
@@ -112,38 +110,38 @@ public class WorldGeneratorMeshes : MonoBehaviour
                     //switch materials that underground
                     switch (i)
                     {
-                        //如果高度1,代表這是地表層，塞入地表方塊
+                        //If the height is 1, it means that this is the surface layer, stuffed into the surface block
                         //case 0:
                         //    m_mat = 0;
 
-                            //break;
-                            //如果高度為2,3,4塞入泥土方塊
+                        //break;
+                        //If the height is 2, 3, 4 stuffed into the dirt block
                         case 2:
                         case 3:
                         case 4:
                             //Dirt
                             m_mat = 2f;
                             break;
-                            //如果高度為5,6塞入石頭方塊
+                        //If the height is 5,6 stuffed into stone squares
                         case 5:
                         case 6:
                             //stone block
                             m_mat = 1f;
                             break;
-                            //如果高度是7,8塞入鵝軟石方塊
+                        //If the height is 7,8 stuffed into the pebbles squares
                         case 7:
                         case 8:
                             m_mat = 16f;
                             break;
-                            //number 32 block
+                        //number 32 block
                         default:
-                        m_mat = 32f;
+                            m_mat = 32f;
                             break;
                     }
                 }
 
                 float3 blockPos = ComputeTransform(index, i);
-                if(blockPos.y > -16 && spawnFlag)
+                if (blockPos.y > -16 && spawnFlag)
                 {
                     BlockSpawner(index, blockPos, b_rotate);
                 }
@@ -156,43 +154,43 @@ public class WorldGeneratorMeshes : MonoBehaviour
             int x = index % h;
             float2 posTemp2 = new float2(x - (float)w * 0.5f, y - (float)h * 0.5f);
             //Prelin noise for hight value
-            int yValue = (int)(noise.cnoise(posTemp2/10) * 4) - 5 - i;
+            int yValue = (int)(noise.cnoise(posTemp2 / 10) * 4) - 5 - i;
             float3 pos = new float3(x - (float)w * 0.5f, yValue, y - (float)h * 0.5f);
-            
+
             return pos;
             //return float4x4.Translate(pos);
         }
 
-        //樹木雲產生器
-        public void TreeNCloudGenerator(int index,int plantType)
+        //Tree cloud generator
+        public void TreeNCloudGenerator(int index, int plantType)
         {
             //location
             float3 blockPos = ComputeTransform(index, 0);
 
             //cloud
-            if(plantType == 0)
+            if (plantType == 0)
             {
 
-                //從該座標往上Y加15,隨機產生4-7大小的雲塊，產生的Entity指定模型材質
+                //Add 15 to Y from this coordinate to randomly generate cloud blocks of 4-7 size, and the resulting Entity specifies the model material
                 var Random = Unity.Mathematics.Random.CreateFromIndex((uint)index);
-                int ranBlock = Random.NextInt(4,7);
-                
+                int ranBlock = Random.NextInt(4, 7);
+
                 for (int i = 0; i < ranBlock; i++)
                 {
                     for (int j = 0; j < ranBlock; j++)
                     {
-                        posTemp = new float3((int)blockPos.x+i, (int)blockPos.y + 15, (int)blockPos.z+j);
+                        posTemp = new float3((int)blockPos.x + i, (int)blockPos.y + 15, (int)blockPos.z + j);
                         BlockSpawner(index, posTemp, false);
                     }
                 }
             }
-            else if(plantType == 1)
+            else if (plantType == 1)
             {
                 int3 blockTemp = new int3((int3)blockPos);
-                //樹木，把當前座標xpos,ypos,zpos作為樹根，往上長其他樹幹和樹葉
+                //Trees, with the current coordinates xpos, ypos, zpos as roots, grow other trunks and leaves up
                 for (int i = 0; i < 7; i++)
                 {
-                    //高度到頂要放樹葉
+                    //Leaves should be placed at the top of the height
                     if (i == 6)
                     {
                         //leaves
@@ -211,8 +209,8 @@ public class WorldGeneratorMeshes : MonoBehaviour
                     posTemp = new float3((int)blockPos.x, (int)blockPos.y + i, (int)blockPos.z);
                     BlockSpawner(index, posTemp, false);
 
-                    //如果高度在3-6之間要額外種樹葉
-                    if(i >= 3 && i <= 6)
+                    //If the height is between 3-6, plant additional leaves
+                    if (i >= 3 && i <= 6)
                     {
                         for (int j = blockTemp.x - 1; j <= blockTemp.x + 1; j++)
                         {
@@ -225,7 +223,7 @@ public class WorldGeneratorMeshes : MonoBehaviour
                                     matNumber = 2;
                                     m_mat = 52f;
 
-                                    posTemp = new float3((int)j, blockPos.y+(int)i, (int)k);
+                                    posTemp = new float3((int)j, blockPos.y + (int)i, (int)k);
                                     BlockSpawner(index, posTemp, false);
                                 }
                             }
@@ -239,15 +237,15 @@ public class WorldGeneratorMeshes : MonoBehaviour
         {
             float3 r;
             //rotate 45c for plants
-            if(m_rotate)
+            if (m_rotate)
             {
                 r = new float3(0, 45, 0);
             }
             else
             {
-                r = new float3(0,0,0);
+                r = new float3(0, 0, 0);
             }
-            
+
             quaternion R;
             float3 s = new float3(1, 1, 1);
             R = quaternion.EulerXYZ(r);
@@ -260,10 +258,10 @@ public class WorldGeneratorMeshes : MonoBehaviour
             // set values unique to the newly created entity, such as the transform.
             Ecb.SetComponent(index, e, MaterialMeshInfo.FromRenderMeshArrayIndices(matNumber, meshNumber));
             //Ecb.SetComponent(index, e, new LocalToWorld {Value = float4x4.Translate(blockPos)});
-            Ecb.SetComponent(index, e, new LocalToWorld {Value = float4x4.TRS(blockPos,R,s)});
-            
-            //設定Shader Graph對應材質編號
-            Ecb.SetComponent(index, e, new BlockID {blockID = m_mat});
+            Ecb.SetComponent(index, e, new LocalToWorld { Value = float4x4.TRS(blockPos, R, s) });
+
+            //Set the Shader Graph corresponding material number
+            Ecb.SetComponent(index, e, new BlockID { blockID = m_mat });
 
         }
     }
@@ -287,11 +285,11 @@ public class WorldGeneratorMeshes : MonoBehaviour
         //int objCount = m_w * m_h;
 
         var matList = new List<Material>();
-            matList.Add(surfaceMaterial);
-            matList.Add(defaultMaterial);
-            matList.Add(defaultMaterialAlpha);
-            matList.Add(plantMaterial);
-        
+        matList.Add(surfaceMaterial);
+        matList.Add(defaultMaterial);
+        matList.Add(defaultMaterialAlpha);
+        matList.Add(plantMaterial);
+
 
         // Create a RenderMeshDescription using the convenience constructor
         // with named parameters.
@@ -299,7 +297,7 @@ public class WorldGeneratorMeshes : MonoBehaviour
             shadowCastingMode: ShadowCastingMode.Off,
             receiveShadows: false);
 
-        var renderMeshArray = new RenderMeshArray(matList.ToArray(), meshes );
+        var renderMeshArray = new RenderMeshArray(matList.ToArray(), meshes);
 
         // Create empty base entity
         var prototype = entityManager.CreateEntity();
@@ -312,21 +310,21 @@ public class WorldGeneratorMeshes : MonoBehaviour
             desc,
             renderMeshArray,
             MaterialMeshInfo.FromRenderMeshArrayIndices(0, 0));
-            
+
         entityManager.AddComponentData(prototype, new LocalToWorld());
         entityManager.AddComponentData(prototype, new BlockID());
 
         //Add a BoxCollider
         quaternion R;
         float3 c = new float3(0, 0, 0);
-        float3 s = new float3(1,1,1);
+        float3 s = new float3(1, 1, 1);
         R = quaternion.EulerXYZ(new float3(0, 0, 0));
         var boxGeometry = new BoxGeometry();
         boxGeometry.Center = c;
         boxGeometry.Size = s;
         boxGeometry.Orientation = R;
         BlobAssetReference<Unity.Physics.Collider> boxCollider = Unity.Physics.BoxCollider.Create(boxGeometry, CollisionFilter.Default);
-        entityManager.AddComponentData(prototype, new PhysicsCollider{Value = boxCollider});
+        entityManager.AddComponentData(prototype, new PhysicsCollider { Value = boxCollider });
 
         // Spawn most of the entities in a Burst job by cloning a pre-created prototype entity,
         // which can be either a Prefab or an entity created at run time like in this sample.
@@ -339,11 +337,10 @@ public class WorldGeneratorMeshes : MonoBehaviour
             h = m_h
         };
 
-        var spawnHandle = spawnJob.Schedule(m_h*m_w,128);
+        var spawnHandle = spawnJob.Schedule(m_h * m_w, 128);
         spawnHandle.Complete();
         ecb.Playback(entityManager);
         ecb.Dispose();
         entityManager.DestroyEntity(prototype);
     }
 }
-

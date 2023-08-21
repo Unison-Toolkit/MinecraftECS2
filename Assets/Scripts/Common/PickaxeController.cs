@@ -1,10 +1,8 @@
-using System;
-using Unity.Physics.Systems;
 using Unity.Collections;
-using Unity.Mathematics;
 using Unity.Entities;
-using UnityEngine;
+using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace Unity.Physics.Extensions
 {
@@ -107,18 +105,18 @@ namespace Unity.Physics.Extensions
                 m_mat = 7;
             }
             #endregion
-            
-            if(Input.GetButtonDown("Fire1"))
+
+            if (Input.GetButtonDown("Fire1"))
             {
                 //Left click to place block
-                PlaceNRemoveBlock(0, 0,false);
+                PlaceNRemoveBlock(0, 0, false);
             }
-            if(Input.GetButtonDown("Fire2"))
+            if (Input.GetButtonDown("Fire2"))
             {
                 //Right click to place block
                 PlaceNRemoveBlock(m_block, m_mat, true);
             }
-            
+
         }
 
         void OnDestroy()
@@ -131,7 +129,7 @@ namespace Unity.Physics.Extensions
 
         void PlaceNRemoveBlock(int m_block, float m_mat, bool b_place)
         {
-            
+
             EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp)
                 .WithAll<PhysicsWorldSingleton>();
             EntityQuery singletonQuery = World.DefaultGameObjectInjectionWorld.EntityManager.CreateEntityQuery(builder);
@@ -145,7 +143,7 @@ namespace Unity.Physics.Extensions
 
             if (math.any(new float3(Direction) != float3.zero))
             {
-            
+
 
                 RaycastInput = new RaycastInput
                 {
@@ -154,12 +152,12 @@ namespace Unity.Physics.Extensions
                     Filter = CollisionFilter.Default
                 };
 
-                if(phyworld.CastRay(RaycastInput, out RaycastHit hit))
+                if (phyworld.CastRay(RaycastInput, out RaycastHit hit))
                 {
                     var world = World.DefaultGameObjectInjectionWorld;
                     var entityManager = world.EntityManager;
 
-                    if(b_place)
+                    if (b_place)
                     {
                         //play place sound effect
                         if (m_blockID == 1 || m_blockID == 3 || m_blockID == 5 || m_blockID == 7)
@@ -172,7 +170,7 @@ namespace Unity.Physics.Extensions
                         }
 
                         //Make sure this is a Block
-                        if(entityManager.HasComponent<BlockID>(hit.Entity))
+                        if (entityManager.HasComponent<BlockID>(hit.Entity))
                         {
                             //add a entity
                             //EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
@@ -181,7 +179,7 @@ namespace Unity.Physics.Extensions
                             var blockPos = entityManager.GetComponentData<LocalToWorld>(hit.Entity);
 
                             var newposition = hit.SurfaceNormal + blockPos.Position;
-                            entityManager.AddComponentData(newBlock, new AddBlock {spawnPos = newposition, spawnType = m_block, spawnMat= m_mat});
+                            entityManager.AddComponentData(newBlock, new AddBlock { spawnPos = newposition, spawnType = m_block, spawnMat = m_mat });
                         }
 
                         //ecb.Dispose();
@@ -189,7 +187,7 @@ namespace Unity.Physics.Extensions
                     //Remove a block
                     else
                     {
-                        if(entityManager.HasComponent<BlockID>(hit.Entity))
+                        if (entityManager.HasComponent<BlockID>(hit.Entity))
                         {
                             if (digEffect && !digEffect.isPlaying)
                             {

@@ -1,19 +1,18 @@
-using System;
 using Unity.Entities;
 using UnityEngine;
 
-    class GameSettingsAuthoring : MonoBehaviour
-    {
-        public int chunkSize;
-    }
+class GameSettingsAuthoring : MonoBehaviour
+{
+    public int chunkSize;
+}
 
-    class GameSettingsBaker : Baker<GameSettingsAuthoring>
+class GameSettingsBaker : Baker<GameSettingsAuthoring>
+{
+    public override void Bake(GameSettingsAuthoring authoring)
     {
-        public override void Bake(GameSettingsAuthoring authoring)
+        AddComponent(new GameSettings
         {
-            AddComponent(new GameSettings
-            {
-                chunkSize = authoring.chunkSize
-            });
-        }
+            chunkSize = authoring.chunkSize
+        });
     }
+}
