@@ -261,7 +261,7 @@ public class WorldGeneratorMeshes : MonoBehaviour
             Ecb.SetComponent(index, e, new LocalToWorld { Value = float4x4.TRS(blockPos, R, s) });
 
             //Set the Shader Graph corresponding material number
-            Ecb.SetComponent(index, e, new BlockID { blockID = m_mat });
+            Ecb.SetComponent(index, e, new Block { blockID = m_mat });
 
         }
     }
@@ -312,7 +312,7 @@ public class WorldGeneratorMeshes : MonoBehaviour
             MaterialMeshInfo.FromRenderMeshArrayIndices(0, 0));
 
         entityManager.AddComponentData(prototype, new LocalToWorld());
-        entityManager.AddComponentData(prototype, new BlockID());
+        entityManager.AddComponentData(prototype, new Block());
 
         //Add a BoxCollider
         quaternion R;

@@ -704,7 +704,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1828801912459304, guid: f0785d13776cd4c4ea1c6eeb7a1f7c1f, type: 3}
       propertyPath: m_Name
-      value: ToolBar
+      value: Toolbar
       objectReference: {fileID: 0}
     - target: {fileID: 114716748789285406, guid: f0785d13776cd4c4ea1c6eeb7a1f7c1f,
         type: 3}

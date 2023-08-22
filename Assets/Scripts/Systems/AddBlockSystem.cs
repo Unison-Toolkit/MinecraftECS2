@@ -38,7 +38,7 @@ partial class AddBlockSystem : SystemBase
             var e = ecb.Instantiate(spawnBlock);
             //ecb.SetComponent(e, new Translation {Value = addBlock.spawnPos});
             ecb.SetComponent(e, new LocalTransform { Position = addBlock.spawnPos, Scale = 1 });
-            ecb.SetComponent(e, new BlockID { blockID = addBlock.spawnMat });
+            ecb.SetComponent(e, new Block { blockID = addBlock.spawnMat });
 
             //Add remove block tag
             ecb.AddComponent(entity, new RemoveBlock());

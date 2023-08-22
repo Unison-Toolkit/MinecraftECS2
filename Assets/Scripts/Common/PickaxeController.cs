@@ -169,7 +169,7 @@ namespace Unity.Physics.Extensions
                         }
 
                         //Make sure this is a Block
-                        if (entityManager.HasComponent<BlockID>(hit.Entity))
+                        if (entityManager.HasComponent<Block>(hit.Entity))
                         {
                             //add a entity
                             //EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
@@ -186,7 +186,7 @@ namespace Unity.Physics.Extensions
                     //Remove a block
                     else
                     {
-                        if (entityManager.HasComponent<BlockID>(hit.Entity))
+                        if (entityManager.HasComponent<Block>(hit.Entity))
                         {
                             if (digEffect && !digEffect.isPlaying)
                             {

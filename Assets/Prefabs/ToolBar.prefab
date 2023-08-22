@@ -1546,7 +1546,7 @@ GameObject:
   - component: {fileID: 114716748789285406}
   - component: {fileID: 114256980540515412}
   m_Layer: 5
-  m_Name: ToolBar
+  m_Name: Toolbar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

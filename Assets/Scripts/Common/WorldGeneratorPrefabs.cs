@@ -252,7 +252,7 @@ partial struct BlockGenerator : IJobEntity
         //Debug.Log(blockPos);
 
         //設定Shader Graph對應材質編號
-        ECB.SetComponent(index, e, new BlockID { blockID = m_mat });
+        ECB.SetComponent(index, e, new Block { blockID = m_mat });
 
     }
 }
