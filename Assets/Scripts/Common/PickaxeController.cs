@@ -8,113 +8,56 @@ namespace Unity.Physics.Extensions
 {
     class PickaxeController : MonoBehaviour
     {
-        public float Distance = 10.0f;
-        public Vector3 Direction = new Vector3(0, 0, 1);
-
         protected RaycastInput RaycastInput;
         protected NativeList<RaycastHit> RaycastHits;
 
-        public static int m_blockID = 1;
-        public AudioClip grass_audio;
-        public AudioClip stone_audio;
-        public AudioClip dirt_audio;
-        public AudioClip wood_audio;
-        AudioSource AS;
+        public static int SelectedIndex = 1;
 
-        public ParticleSystem digEffect;
-        // Contrarily to ISystem, SystemBase systems are classes.
-        // They are not Burst compiled, and can use managed code.
+        [SerializeField] Vector3 _raycastDirection = new(0, 0, 1);
+        [SerializeField] float _raycastDistance = 10.0f;
+        [SerializeField] AudioClip _createBlockSound;
+        [SerializeField] AudioClip _removeBlockSound;
+        [SerializeField] ParticleSystem _digEffect;
+
+        AudioSource _audioSource;
+
         void Start()
         {
-            AS = this.GetComponent<AudioSource>();
+            _audioSource = this.GetComponent<AudioSource>();
             Cursor.lockState = CursorLockMode.Locked;
             RaycastHits = new NativeList<RaycastHit>(Allocator.Persistent);
         }
 
         void Update()
         {
-            //scroll blocks
-            float m_mat = 0f;
-            int m_block = 1;
-
             if (Input.GetAxis("Mouse ScrollWheel") < 0)
             {
-                m_blockID++;
+                SelectedIndex++;
+
+                if (SelectedIndex > 7)
+                {
+                    SelectedIndex = 1;
+                }
             }
+
             if (Input.GetAxis("Mouse ScrollWheel") > 0)
             {
-                m_blockID--;
-            }
+                SelectedIndex--;
 
-            if (m_blockID > 7)
-            {
-                m_blockID = 1;
+                if (SelectedIndex < 1)
+                {
+                    SelectedIndex = 7;
+                }
             }
-            if (m_blockID < 1)
-            {
-                m_blockID = 7;
-            }
-
-            //m_block list
-            //0 = sixSided
-            //1 = default
-            //2 = alpha
-            //3 = plant
-
-            #region // blocklist
-            if (m_blockID == 1)
-            {
-                //stone
-                m_block = 1;
-                m_mat = 1;
-            }
-            else if (m_blockID == 2)
-            {
-                //plank
-                m_block = 1;
-                m_mat = 4;
-            }
-            else if (m_blockID == 3)
-            {
-                //glass
-                m_block = 2;
-                m_mat = 49;
-            }
-            else if (m_blockID == 4)
-            {
-                //wood
-                m_block = 0;
-                m_mat = 0.67f;
-            }
-            else if (m_blockID == 5)
-            {
-                //cobble
-                m_block = 1;
-                m_mat = 16;
-            }
-            else if (m_blockID == 6)
-            {
-                //TNT
-                m_block = 0;
-                m_mat = 0.33f;
-            }
-            else if (m_blockID == 7)
-            {
-                //brick
-                m_block = 1;
-                m_mat = 7;
-            }
-            #endregion
 
             if (Input.GetButtonDown("Fire1"))
             {
-                //Left click to place block
-                PlaceNRemoveBlock(0, 0, false);
+                CreateOrRemoveBlock(false);
             }
+
             if (Input.GetButtonDown("Fire2"))
             {
-                //Right click to place block
-                PlaceNRemoveBlock(m_block, m_mat, true);
+                CreateOrRemoveBlock(true);
             }
         }
 
@@ -126,80 +69,82 @@ namespace Unity.Physics.Extensions
             }
         }
 
-        void PlaceNRemoveBlock(int m_block, float m_mat, bool b_place)
+        void CreateOrRemoveBlock(bool creating)
         {
-
-            EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp)
-                .WithAll<PhysicsWorldSingleton>();
+            EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<PhysicsWorldSingleton>();
             EntityQuery singletonQuery = World.DefaultGameObjectInjectionWorld.EntityManager.CreateEntityQuery(builder);
             PhysicsWorld phyworld = singletonQuery.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld;
             float3 origin = transform.position;
-            float3 direction = (transform.rotation * Direction) * Distance;
-
+            float3 direction = (transform.rotation * _raycastDirection) * _raycastDistance;
             RaycastHits.Clear();
             singletonQuery.Dispose();
 
-
-            if (math.any(new float3(Direction) != float3.zero))
+            RaycastInput = new RaycastInput
             {
+                Start = origin,
+                End = origin + direction,
+                Filter = CollisionFilter.Default
+            };
 
+            if (!phyworld.CastRay(RaycastInput, out RaycastHit hit))
+                return;
 
-                RaycastInput = new RaycastInput
+            var world = World.DefaultGameObjectInjectionWorld;
+            var entityManager = world.EntityManager;
+
+            if (!entityManager.HasComponent<Block>(hit.Entity))
+                return;
+
+            if (creating)
+            {
+                // TODO: Move logic elsewhere.
+                int blockID = 1;
+                float mat = 0f;
+
+                switch (SelectedIndex)
                 {
-                    Start = origin,
-                    End = origin + direction,
-                    Filter = CollisionFilter.Default
-                };
-
-                if (phyworld.CastRay(RaycastInput, out RaycastHit hit))
-                {
-                    var world = World.DefaultGameObjectInjectionWorld;
-                    var entityManager = world.EntityManager;
-
-                    if (b_place)
-                    {
-                        //play place sound effect
-                        if (m_blockID == 1 || m_blockID == 3 || m_blockID == 5 || m_blockID == 7)
-                        {
-                            AS.PlayOneShot(stone_audio);
-                        }
-                        else if (m_blockID == 2 || m_blockID == 4 || m_blockID == 6)
-                        {
-                            AS.PlayOneShot(wood_audio);
-                        }
-
-                        //Make sure this is a Block
-                        if (entityManager.HasComponent<Block>(hit.Entity))
-                        {
-                            //add a entity
-                            //EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
-                            var newBlock = entityManager.CreateEntity();
-
-                            var blockPos = entityManager.GetComponentData<LocalToWorld>(hit.Entity);
-
-                            var newposition = hit.SurfaceNormal + blockPos.Position;
-                            entityManager.AddComponentData(newBlock, new AddBlock { spawnPos = newposition, spawnType = m_block, spawnMat = m_mat });
-                        }
-
-                        //ecb.Dispose();
-                    }
-                    //Remove a block
-                    else
-                    {
-                        if (entityManager.HasComponent<Block>(hit.Entity))
-                        {
-                            if (digEffect && !digEffect.isPlaying)
-                            {
-                                digEffect.transform.position = hit.Position;
-                                digEffect.Play();
-                            }
-
-                            AS.PlayOneShot(dirt_audio);
-                            //add a remove tag on this block
-                            entityManager.AddComponentData(hit.Entity, new RemoveBlock());
-                        }
-                    }
+                    case 1: // stone
+                        blockID = 1;
+                        mat = 1;
+                        break;
+                    case 2: // plank
+                        blockID = 1;
+                        mat = 4;
+                        break;
+                    case 3: // glass
+                        blockID = 2;
+                        mat = 49;
+                        break;
+                    case 4: // wood
+                        blockID = 0;
+                        mat = 0.67f;
+                        break;
+                    case 5: // cobble
+                        blockID = 1;
+                        mat = 16;
+                        break;
+                    case 6: // TNT
+                        blockID = 0;
+                        mat = 0.33f;
+                        break;
+                    case 7: // brick
+                        blockID = 1;
+                        mat = 7;
+                        break;
                 }
+
+                _audioSource.PlayOneShot(_createBlockSound);
+                var newBlock = entityManager.CreateEntity();
+                var blockPos = entityManager.GetComponentData<LocalToWorld>(hit.Entity);
+                var newPosition = hit.SurfaceNormal + blockPos.Position;
+                entityManager.AddComponentData(newBlock, new AddBlock { spawnPos = newPosition, spawnType = blockID, spawnMat = mat });
+            }
+            else // Remove a block.
+            {
+                _audioSource.PlayOneShot(_removeBlockSound);
+                _digEffect.transform.position = hit.Position;
+                _digEffect.Play();
+                entityManager.AddComponentData(hit.Entity, new RemoveBlock());
             }
         }
     }

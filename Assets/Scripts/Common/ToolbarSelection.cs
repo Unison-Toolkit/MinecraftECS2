@@ -19,7 +19,7 @@ public class ToolbarSelection : MonoBehaviour
 
     private void Update()
     {
-        blockNum = Unity.Physics.Extensions.PickaxeController.m_blockID - 1;
+        blockNum = Unity.Physics.Extensions.PickaxeController.SelectedIndex - 1;
         //print("blockNum=" +blockNum);
 
         for (int i = 0; i < 7; i++)

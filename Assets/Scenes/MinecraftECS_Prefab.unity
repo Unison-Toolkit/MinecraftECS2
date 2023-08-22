@@ -341,13 +341,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 177c89680f35e446b9171b6630802216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Distance: 10
-  Direction: {x: 0, y: 0, z: 1}
-  grass_audio: {fileID: 8300000, guid: 30d934cde79924144910cfcfb36ca525, type: 3}
-  stone_audio: {fileID: 8300000, guid: 6aca345b16ab8884a92a54275c969d6a, type: 3}
-  dirt_audio: {fileID: 8300000, guid: 3ae7164d42f158b48826e91c007d1233, type: 3}
-  wood_audio: {fileID: 8300000, guid: a99fe2de2f7f1f643b43c28db5f71ddd, type: 3}
-  digEffect: {fileID: 1562870028}
+  _direction: {x: 0, y: 0, z: 1}
+  _maxDistance: 10
+  _createBlockSound: {fileID: 8300000, guid: 30d934cde79924144910cfcfb36ca525, type: 3}
+  _removeBlockSound: {fileID: 8300000, guid: 3ae7164d42f158b48826e91c007d1233, type: 3}
+  _digEffect: {fileID: 1562870028}
 --- !u!82 &330585550
 AudioSource:
   m_ObjectHideFlags: 0
