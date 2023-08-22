@@ -195,8 +195,8 @@ namespace Unity.Physics.Extensions
                             }
 
                             AS.PlayOneShot(dirt_audio);
-                            // TODO: Damage block instead?
-                            entityManager.DestroyEntity(hit.Entity);
+                            //add a remove tag on this block
+                            entityManager.AddComponentData(hit.Entity, new RemoveBlock());
                         }
                     }
                 }
