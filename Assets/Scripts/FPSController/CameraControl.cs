@@ -2,23 +2,24 @@ using UnityEngine;
 
 class CameraControl : MonoBehaviour
 {
-    public static float lookSpeedH = 2f;
-    public static float lookSpeedV = 2f;
+    public static Camera Instance;
+    public static float LookSpeedH = 2f;
+    public static float LookSpeedV = 2f;
 
-    private float yaw;
-    private float pitch;
-
+    float _yaw;
+    float _pitch;
 
     private void Start()
     {
-        yaw = transform.eulerAngles.y;
-        pitch = transform.eulerAngles.x;
+        Instance = GetComponent<Camera>();
+        _yaw = transform.eulerAngles.y;
+        _pitch = transform.eulerAngles.x;
     }
 
     private void Update()
     {
-        yaw += lookSpeedH * Input.GetAxis("Mouse X");
-        pitch -= lookSpeedV * Input.GetAxis("Mouse Y");
-        transform.eulerAngles = new Vector3(pitch, yaw, 0f);
+        _yaw += LookSpeedH * Input.GetAxis("Mouse X");
+        _pitch -= LookSpeedV * Input.GetAxis("Mouse Y");
+        transform.eulerAngles = new Vector3(_pitch, _yaw, 0f);
     }
 }

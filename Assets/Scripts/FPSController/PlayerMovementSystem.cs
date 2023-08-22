@@ -16,11 +16,11 @@ partial class PlayerMovementSystem : SystemBase
         Vector3 camPosition = default;
         float2 moveVelocity = default;
         float3 moveInput = new float3(Input.GetAxis("Horizontal"), Input.GetAxis("Jump"), Input.GetAxis("Vertical"));
-        Transform camTransform = CameraLink.Instance.transform;
+        Transform camTransform = CameraControl.Instance.transform;
         Quaternion camRotation = Quaternion.Euler(0, camTransform.rotation.eulerAngles.y, 0);
 
         Entities
-            .WithAll<PlayerEntity>()
+            .WithAll<PlayerTag>()
            .ForEach((ref LocalTransform local, ref PhysicsVelocity vel) =>
             {
                 // Sync camera and player.

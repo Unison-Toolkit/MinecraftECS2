@@ -24,7 +24,6 @@ partial struct BlockGenerator : IJobEntity
     [BurstCompile]
     void Execute([ChunkIndexInQuery] int index, BlockTypeAspect BlockType)
     {
-
         //defaultPrefab = BlockType.defaultPrefab;
         //float3 posTemp = new float3(0,0,0);
 
@@ -153,7 +152,7 @@ partial struct BlockGenerator : IJobEntity
     public void TreeNCloudGenerator(int index, int plantType, in BlockTypeAspect BlockType)
     {
         //location
-        float3 posTemp = new float3(0, 0, 0);
+        float3 posTemp = default;
         float3 blockPos = ComputeTransform(index, 0);
 
         //cloud
@@ -263,8 +262,10 @@ public partial struct BlockSpawningSystem : ISystem
 {
     [BurstCompile]
     public void OnCreate(ref SystemState state) { }
+
     [BurstCompile]
     public void OnDestroy(ref SystemState state) { }
+
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -273,9 +274,9 @@ public partial struct BlockSpawningSystem : ISystem
 
         //Announce arrays and commandBuffers
         //The number of blocks is equal to chunk x chunk x 1500
-        int totalamount = (config.chunkSize * config.chunkSize) * 15;
+        //int totalamount = (config.chunkSize * config.chunkSize) * 15;
 
-        var blocks = CollectionHelper.CreateNativeArray<Entity>(totalamount, Allocator.Temp);
+        //var blocks = CollectionHelper.CreateNativeArray<Entity>(totalamount, Allocator.Temp);
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
